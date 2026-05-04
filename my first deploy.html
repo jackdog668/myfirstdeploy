@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Desi Baker | Mixed Media AI Artist</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0A0B0D;
+      --panel: rgba(255,255,255,0.05);
+      --panel-2: rgba(255,255,255,0.03);
+      --line: rgba(255,255,255,0.10);
+      --text: #F5F7FA;
+      --muted: rgba(245,247,250,0.72);
+      --green: #40FF78;
+      --gold: #FFDB40;
+      --purple: #7A30FF;
+      --blue: #00C8FF;
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+      --radius: 28px;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Space Grotesk", sans-serif;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(64, 255, 120, 0.14), transparent 28%),
+        radial-gradient(circle at 85% 18%, rgba(122, 48, 255, 0.16), transparent 30%),
+        radial-gradient(circle at 75% 72%, rgba(0, 200, 255, 0.12), transparent 28%),
+        linear-gradient(180deg, #0A0B0D 0%, #0C0E12 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .noise {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      opacity: 0.04;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4) 0 1px, transparent 1px),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,0.35) 0 1px, transparent 1px),
+        radial-gradient(circle at 60% 80%, rgba(255,255,255,0.28) 0 1px, transparent 1px);
+      background-size: 180px 180px, 240px 240px, 220px 220px;
+      mix-blend-mode: screen;
+    }
+
+    .page {
+      width: 100%;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+      padding: 12px 0;
+    }
+
+    .brand-chip,
+    .mini-nav a {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(12px);
+      border-radius: 999px;
+    }
+
+    .brand-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .chip-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 16px var(--green);
+    }
+
+    .mini-nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .mini-nav a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 10px 14px;
+      transition: 0.25s ease;
+    }
+
+    .mini-nav a:hover {
+      color: var(--text);
+      border-color: rgba(64,255,120,0.35);
+      background: rgba(64,255,120,0.08);
+    }
+
+    .hero-shell {
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025)),
+        rgba(10,11,13,0.72);
+      backdrop-filter: blur(18px);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(120deg, rgba(64,255,120,0.10), transparent 20%, transparent 80%, rgba(122,48,255,0.10)),
+        linear-gradient(180deg, rgba(255,255,255,0.04), transparent 35%);
+    }
+
+    .hero {
+      min-height: 84vh;
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 44px;
+      align-items: center;
+      padding: 68px;
+      position: relative;
+    }
+
+    .left-col {
+      max-width: 650px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      color: var(--green);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--green));
+    }
+
+    h1 {
+      font-size: clamp(3rem, 8vw, 6rem);
+      line-height: 0.92;
+      letter-spacing: -0.08em;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #ffffff 0%, #CFFFE0 40%, #40FF78 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .headline {
+      font-size: clamp(1.3rem, 2.4vw, 2rem);
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      font-weight: 600;
+      max-width: 720px;
+      color: #F8FAFC;
+      margin-bottom: 22px;
+    }
+
+    .bio {
+      font-size: clamp(1rem, 1.45vw, 1.14rem);
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 620px;
+      margin-bottom: 34px;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 15px 18px;
+      min-width: 160px;
+      text-align: center;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,255,255,0.22);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, rgba(64,255,120,1), rgba(124,255,162,1));
+      color: #0A0B0D;
+      border-color: rgba(64,255,120,0.8);
+      box-shadow: 0 14px 40px rgba(64,255,120,0.18);
+    }
+
+    .btn.secondary:hover {
+      background: rgba(64,255,120,0.08);
+      border-color: rgba(64,255,120,0.35);
+      box-shadow: 0 12px 32px rgba(64,255,120,0.08);
+    }
+
+    .micro-copy {
+      font-family: "JetBrains Mono", monospace;
+      color: rgba(255,255,255,0.5);
+      font-size: 12px;
+      line-height: 1.7;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .right-col {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 500px;
+      z-index: 1;
+    }
+
+    .orbital-wrap {
+      position: relative;
+      width: min(460px, 100%);
+      aspect-ratio: 1 / 1;
+      display: grid;
+      place-items: center;
+    }
+
+    .orbit-ring,
+    .orbit-ring-2 {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .orbit-ring {
+      transform: scale(1);
+    }
+
+    .orbit-ring-2 {
+      transform: scale(0.82);
+      border-color: rgba(64,255,120,0.18);
+    }
+
+    .glow-blob,
+    .glow-blob-2,
+    .glow-blob-3 {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(28px);
+      opacity: 0.8;
+    }
+
+    .glow-blob {
+      width: 180px;
+      height: 180px;
+      background: rgba(64,255,120,0.16);
+      top: 8%;
+      left: 10%;
+    }
+
+    .glow-blob-2 {
+      width: 160px;
+      height: 160px;
+      background: rgba(122,48,255,0.18);
+      bottom: 6%;
+      right: 8%;
+    }
+
+    .glow-blob-3 {
+      width: 120px;
+      height: 120px;
+      background: rgba(0,200,255,0.18);
+      top: 18%;
+      right: 10%;
+    }
+
+    .mark-card {
+      width: 72%;
+      aspect-ratio: 1 / 1;
+      border-radius: 34px;
+      position: relative;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+        rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+      backdrop-filter: blur(18px);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .mark-card::before {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.06);
+      pointer-events: none;
+    }
+
+    .mark-core {
+      position: relative;
+      width: 64%;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), transparent 28%),
+        linear-gradient(135deg, rgba(64,255,120,0.95), rgba(0,200,255,0.9), rgba(122,48,255,0.9));
+      box-shadow:
+        0 0 40px rgba(64,255,120,0.20),
+        0 0 80px rgba(122,48,255,0.18),
+        inset 0 1px 18px rgba(255,255,255,0.15);
+    }
+
+    .mark-core::before {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 50%;
+    }
+
+    .monogram {
+      position: relative;
+      z-index: 2;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 700;
+      letter-spacing: -0.10em;
+      color: #08100C;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.10);
+    }
+
+    .orbit-dot,
+    .orbit-dot-2,
+    .orbit-dot-3 {
+      position: absolute;
+      border-radius: 50%;
+      box-shadow: 0 0 20px currentColor;
+    }
+
+    .orbit-dot {
+      width: 14px;
+      height: 14px;
+      top: 9%;
+      left: 56%;
+      color: var(--green);
+      background: currentColor;
+    }
+
+    .orbit-dot-2 {
+      width: 12px;
+      height: 12px;
+      bottom: 18%;
+      left: 15%;
+      color: var(--gold);
+      background: currentColor;
+    }
+
+    .orbit-dot-3 {
+      width: 10px;
+      height: 10px;
+      top: 28%;
+      right: 13%;
+      color: var(--blue);
+      background: currentColor;
+    }
+
+    .signature-tag {
+      position: absolute;
+      bottom: 22px;
+      right: 22px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      background: rgba(10,11,13,0.45);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      padding: 10px 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .lower {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(14px);
+      padding: 24px;
+      box-shadow: 0 16px 42px rgba(0,0,0,0.22);
+    }
+
+    .panel-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.48);
+      margin-bottom: 10px;
+    }
+
+    .panel h2 {
+      font-size: 1.35rem;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+    }
+
+    .panel p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.98rem;
+    }
+
+    .link-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .link-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 15px 16px;
+      border-radius: 18px;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      transition: 0.2s ease;
+    }
+
+    .link-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(64,255,120,0.30);
+    }
+
+    .link-card strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .link-card span {
+      color: rgba(255,255,255,0.55);
+      font-size: 0.92rem;
+    }
+
+    .arrow {
+      color: var(--green);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .footer-note {
+      text-align: center;
+      padding: 22px 10px 8px;
+      color: rgba(255,255,255,0.42);
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 40px 26px 30px;
+        min-height: auto;
+      }
+
+      .right-col {
+        order: -1;
+        min-height: 340px;
+      }
+
+      .orbital-wrap {
+        width: min(330px, 92%);
+      }
+
+      .lower {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 16px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .mini-nav {
+        justify-content: flex-start;
+      }
+
+      h1 {
+        font-size: clamp(2.5rem, 16vw, 4.4rem);
+      }
+
+      .headline {
+        font-size: 1.2rem;
+      }
+
+      .hero {
+        gap: 20px;
+      }
+
+      .action-row {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .signature-tag {
+        position: static;
+        margin-top: 16px;
+        display: inline-flex;
+      }
+
+      .mark-card {
+        width: 82%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <main class="page">
+    <header class="topbar">
+      <div class="brand-chip">
+        <span class="chip-dot"></span>
+        Digital Alchemy
+      </div>
+
+      <nav class="mini-nav" aria-label="Section navigation">
+        <a href="#home">Home</a>
+        <a href="#links">Links</a>
+        <a href="#about">About</a>
+      </nav>
+    </header>
+
+    <section class="hero-shell" id="home">
+      <div class="hero">
+        <div class="left-col">
+          <div class="eyebrow">Creative Systems • AI • Visual Direction</div>
+
+          <h1>
+            Desi <span class="gradient-text">Baker</span>
+          </h1>
+
+          <p class="headline">
+            Mixed Media AI Artist. Designer. AI Systems Builder.
+          </p>
+
+          <p class="bio">
+            I help creators and businesses turn ideas into visual assets, digital products,
+            automation workflows, and monetizable creative systems through AI.
+          </p>
+
+          <div class="action-row">
+            <a class="btn primary" href="https://instagram.com/vibedealership" target="_blank" rel="noopener noreferrer">
+              Instagram
+            </a>
+
+            <a class="btn secondary" href="#" target="_blank" rel="noopener noreferrer">
+              Digital Alchemy
+            </a>
+
+            <a class="btn secondary" href="#" target="_blank" rel="noopener noreferrer">
+              Portfolio / DB Creations
+            </a>
+          </div>
+
+          <div class="micro-copy">
+            Building creative infrastructure through design, AI systems, and monetizable digital assets.
+          </div>
+        </div>
+
+        <div class="right-col">
+          <div class="orbital-wrap">
+            <div class="glow-blob"></div>
+            <div class="glow-blob-2"></div>
+            <div class="glow-blob-3"></div>
+
+            <div class="orbit-ring"></div>
+            <div class="orbit-ring-2"></div>
+
+            <div class="mark-card" aria-label="Custom monogram image placeholder">
+              <div class="mark-core">
+                <div class="monogram">DB</div>
+              </div>
+            </div>
+
+            <div class="orbit-dot"></div>
+            <div class="orbit-dot-2"></div>
+            <div class="orbit-dot-3"></div>
+          </div>
+
+          <div class="signature-tag">custom monogram placeholder</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lower" id="about">
+      <article class="panel">
+        <div class="panel-label">What I Do</div>
+        <h2>Creative direction with real output</h2>
+        <p>
+          I work at the intersection of AI imagery, mixed media design, digital product thinking,
+          and automation. The goal is not just to make cool visuals. The goal is to turn ideas into
+          assets, systems, and things that can actually move.
+        </p>
+      </article>
+
+      <article class="panel" id="links">
+        <div class="panel-label">Primary Links</div>
+        <h2>Find me online</h2>
+
+        <div class="link-grid">
+          <a class="link-card" href="https://instagram.com/vibedealership" target="_blank" rel="noopener noreferrer">
+            <div>
+              <strong>Instagram</strong>
+              <span>@vibedealership</span>
+            </div>
+            <div class="arrow">↗</div>
+          </a>
+
+          <a class="link-card" href="#" target="_blank" rel="noopener noreferrer">
+            <div>
+              <strong>Digital Alchemy</strong>
+              <span>Add your Skool or community link here</span>
+            </div>
+            <div class="arrow">↗</div>
+          </a>
+
+          <a class="link-card" href="#" target="_blank" rel="noopener noreferrer">
+            <div>
+              <strong>Portfolio / DB Creations</strong>
+              <span>Add your website or portfolio link here</span>
+            </div>
+            <div class="arrow">↗</div>
+          </a>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer-note">
+      One-page personal landing page • simple deploy • premium feel
+    </div>
+  </main>
+</body>
+</html>
