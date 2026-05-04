@@ -1,1 +1,22 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Logs / env / secrets
+*.log
+.env
+.env.*
+*.key
+*.pem
+
+# Build output / Vercel
+dist/
+build/
 .vercel
+.vercel/
